@@ -1,0 +1,34 @@
+{{- /*
+  覆盖 themes/hextra/layouts/_partials/components/last-updated.html
+  在原有"最后更新于"基础上,增加"发布于"(创建日期)的展示。
+  受两个开关控制(在 hugo.yaml 的 params 下配置):
+    displayUpdatedDate:    true/false  -> 是否显示"最后更新于"(主题原生参数)
+    displayPublishedDate:  true/false  -> 是否显示"发布于"(本站新增参数)
+*/ -}}
+{{- $lastUpdated := (T "lastUpdated") | default "最后更新于" -}}
+{{- $published := "发布于" -}}
+{{- $page := . -}}
+
+{{- $showLastmod := and site.Params.displayUpdatedDate .Lastmod -}}
+{{- $showDate := and site.Params.displayPublishedDate .Date -}}
+
+{{- if or $showLastmod $showDate -}}
+  <div class="hx:mt-12 hx:mb-8 hx:block hx:text-xs hx:text-gray-500 hx:ltr:text-right hx:rtl:text-left hx:dark:text-gray-400">
+    {{- if $showDate -}}
+      {{ $published }} <time datetime="{{ .Date.Format "2006-01-02T15:04:05.000Z" }}">{{ partial "utils/format-date" .Date }}</time>
+    {{- end -}}
+    {{- if and $showDate $showLastmod -}}
+      <span class="hx:mx-2">·</span>
+    {{- end -}}
+    {{- if $showLastmod -}}
+      {{ $lastUpdated }} <time datetime="{{ .Lastmod.Format "2006-01-02T15:04:05.000Z" }}">{{ partial "utils/format-date" .Lastmod }}</time>
+      {{- if site.Params.displayUpdatedAuthor -}}
+        {{- with $page.GitInfo -}}
+          {{ print " • " .AuthorName | safeHTML }}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  </div>
+{{- else -}}
+  <div class="hx:mt-16"></div>
+{{- end -}}

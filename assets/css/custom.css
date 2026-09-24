@@ -1,0 +1,102 @@
+/* ============================================================
+   本文件覆盖 themes/hextra/assets/css/custom.css(同名文件,
+   项目自身 assets/ 优先于主题 assets/)。
+   这里全部使用原生 CSS 类名,不使用 hx: 前缀的 Tailwind 工具类——
+   因为 Tailwind 样式是主题发布时预编译好的(css/compiled/main.css),
+   新增的类名不在预编译范围内,写了也不会生效。
+   ============================================================ */
+
+/* 悬浮预览卡片(配合 {{< linkpreview >}} shortcode 使用) */
+.hxc-link-preview {
+  position: relative;
+  display: inline;
+  border-bottom: 1px dashed currentColor;
+}
+
+.hxc-link-preview-popup {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  margin-bottom: 6px;
+  width: 260px;
+  max-width: 70vw;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #374151;
+  white-space: normal;
+  z-index: 50;
+}
+
+.hxc-link-preview:hover .hxc-link-preview-popup,
+.hxc-link-preview:focus-within .hxc-link-preview-popup {
+  display: block;
+}
+
+.hxc-link-preview-title {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.hxc-link-preview-desc {
+  display: block;
+  color: inherit;
+}
+
+/* 深色模式跟随主题的 .dark 类 */
+.dark .hxc-link-preview-popup {
+  background: #171717;
+  border-color: #262626;
+  color: #d4d4d4;
+}
+
+.dark .hxc-link-preview-title {
+  color: #f5f5f5;
+}
+
+/* 视频(配合 {{< video >}} shortcode 使用) */
+.hxc-video {
+  margin: 1.5rem 0;
+}
+
+.hxc-video video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  background: #000;
+}
+
+.hxc-video figcaption {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.dark .hxc-video figcaption {
+  color: #9ca3af;
+}
+
+/* 代码块行锚点高亮:配合 fenced code block 的
+   {linenos=inline,anchorlinenos=true,lineanchors=xxx} 属性使用。
+   点击行号跳转后,被跳转到的那一行(:target)会有背景高亮。
+   用了 :has() 选择器,如果需要兼容非常旧的浏览器可以去掉这条规则,
+   只保留下面 .ln:target 那条(效果会差一点,只高亮行号那一小块)。 */
+.chroma .line:has(.ln:target) {
+  background-color: rgba(250, 204, 21, 0.25);
+  display: inline-block;
+  width: 100%;
+}
+
+.chroma .ln:target {
+  background-color: rgba(250, 204, 21, 0.25);
+  border-radius: 3px;
+}

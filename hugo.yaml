@@ -1,0 +1,123 @@
+baseURL: "https://example.com/"
+title: "我的项目文档"
+languageCode: "zh-cn"
+hasCJKLanguage: true
+defaultContentLanguage: zh-cn
+
+# 关键:开启相对路径输出,构建产物才能用浏览器直接双击 index.html 打开,
+# 不用起本地 web server。默认 Hugo 生成的是 /css/xxx.css 这种"根相对路径",
+# 用 file:// 协议直接打开会 404,导致样式/布局全部丢失。
+relativeURLs: true
+
+theme: ["hextra"]
+
+enableRobotsTXT: true
+enableGitInfo: false
+
+outputs:
+  home: [html]
+  page: [html]
+  section: [html, rss]
+
+markup:
+  highlight:
+    noClasses: false
+  goldmark:
+    renderer:
+      unsafe: true
+    extensions:
+      # GFM 的 ~~删除线~~ 与 Extras 的 ~下标~ 冲突,需关闭内置 strikethrough,
+      # 改用 extras.delete(双波浪线)来实现删除线
+      strikethrough: false
+      extras:
+        delete:
+          enable: true
+        insert:
+          enable: true
+        mark:
+          enable: true
+        subscript:
+          enable: true
+        superscript:
+          enable: true
+      typographer:
+        disable: false
+
+enableInlineShortcodes: true
+
+menu:
+  main:
+    - identifier: documentation
+      name: 文档
+      pageRef: /docs
+      weight: 1
+    - name: 搜索
+      weight: 2
+      params:
+        type: search
+    - name: GitHub
+      weight: 3
+      url: "https://github.com/your-org/your-repo"
+      params:
+        icon: github
+
+  sidebar:
+    - identifier: more
+      name: 更多
+      params:
+        type: separator
+      weight: 1
+    - identifier: hugoDocs
+      name: "Hugo 官方文档 ↗"
+      url: "https://gohugo.io/documentation/"
+      weight: 2
+
+params:
+  description: "基于 Hextra 主题构建的离线 Hugo 文档站"
+
+  navbar:
+    displayTitle: true
+    displayLogo: false
+    width: wide
+
+  theme:
+    default: system
+    displayToggle: true
+
+  footer:
+    enable: true
+    displayCopyright: true
+    displayPoweredBy: true
+    width: normal
+
+  displayUpdatedDate: true
+  displayPublishedDate: true
+  dateFormat: "2006年01月02日"
+  displayReadingTime: true
+
+  # 图片点击放大预览(离线部署: 同样把 medium-zoom vendor 到本地,不走默认 CDN)
+  imageZoom:
+    enable: true
+    js: "js/vendor/medium-zoom.min.js"
+
+  enableImageLazyLoading: true
+
+  search:
+    enable: true
+    type: flexsearch
+    flexsearch:
+      index: content
+      tokenize: forward
+      # 离线部署: 使用本地 vendor 的 flexsearch 包,不从 CDN 拉取
+      js: "js/vendor/flexsearch.bundle.min.js"
+
+  highlight:
+    copy:
+      enable: true
+      display: hover
+
+  page:
+    width: normal
+
+  toc:
+    displayTags: true

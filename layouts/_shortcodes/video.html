@@ -1,0 +1,68 @@
+{{- /*
+  自定义 shortcode:嵌入本地视频(Hextra 主题没有内置视频组件)。
+
+  路径解析:推荐把视频/封面图放在 assets/ 目录下(比如
+  assets/videos/demo.mp4),用 resources.Get 取到 Resource 对象后,
+  再自己手动拼出"相对当前页面"的路径——不依赖 Hugo 对 relativeURLs
+  的自动重写。
+
+  ⚠️ 踩坑记录(实测确认,不是查文档得出的):Hugo 开启 relativeURLs 后,
+  只会自动重写它认得的一小撮标签属性组合(比如 <img src>、<a href>、
+  <source src> 这些很常见的),但 <video poster="..."> 这个属性不在
+  这个重写名单里——用 relURL 或者 .RelPermalink 算出来的都是"相对
+  网站根目录"的路径(比如 /images/x.png),src 因为在重写名单里所以
+  最终页面上看起来是对的,poster 因为不在名单里就会保持 /images/x.png
+  这种根相对路径,离线用 file:// 直接打开时又会 404。
+
+  解决办法:不依赖 Hugo 的自动重写,自己根据当前页面的路径深度算出
+  "../../.." 这种真正的相对路径前缀,两种情况(relativeURLs 开或关)
+  都能正确工作。
+
+  @param {string} src 视频文件路径,相对 assets/ 目录,如 videos/demo.mp4
+  @param {string} poster 可选,封面图路径,同样相对 assets/ 目录
+  @param {string} caption 可选,视频下方说明文字(会生成 figcaption)
+  @param {string} type 可选,视频 MIME 类型,默认 video/mp4
+  @example {{< video src="videos/demo.mp4" poster="images/preview-demo.png" caption="图 2:演示视频" >}}
+*/ -}}
+
+{{- $srcParam := .Get "src" -}}
+{{- $posterParam := .Get "poster" -}}
+{{- $caption := .Get "caption" -}}
+{{- $type := .Get "type" | default "video/mp4" -}}
+
+{{- /* 算出当前页面相对网站根目录的深度,拼出对应数量的 "../" */ -}}
+{{- $segments := split (strings.Trim .Page.RelPermalink "/") "/" -}}
+{{- $prefix := "" -}}
+{{- range $segments -}}{{- $prefix = print $prefix "../" -}}{{- end -}}
+
+{{- $toRelative := dict -}}
+
+{{- $srcURL := "" -}}
+{{- with (resources.Get (strings.TrimPrefix "/" $srcParam)) -}}
+  {{- $srcURL = print $prefix (strings.TrimPrefix "/" .RelPermalink) -}}
+{{- else -}}
+  {{- $srcURL = print $prefix (strings.TrimPrefix "/" $srcParam) -}}
+{{- end -}}
+
+{{- $posterURL := "" -}}
+{{- with $posterParam -}}
+  {{- with (resources.Get (strings.TrimPrefix "/" .)) -}}
+    {{- $posterURL = print $prefix (strings.TrimPrefix "/" .RelPermalink) -}}
+  {{- else -}}
+    {{- $posterURL = print $prefix (strings.TrimPrefix "/" $posterParam) -}}
+  {{- end -}}
+{{- end -}}
+
+<figure class="hxc-video">
+  <video
+    controls
+    preload="metadata"
+    {{ with $posterURL }}poster="{{ . }}"{{ end }}
+  >
+    <source src="{{ $srcURL }}" type="{{ $type }}">
+    你的浏览器不支持 <code>&lt;video&gt;</code> 标签,<a href="{{ $srcURL }}">点击直接下载视频</a>。
+  </video>
+  {{- with $caption }}
+    <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>

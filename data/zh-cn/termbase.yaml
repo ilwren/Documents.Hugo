@@ -1,0 +1,8 @@
+# 术语表数据,供 {{< term >}} shortcode 使用
+# 每一项: abbr(缩写) / term(全称) / definition(释义)
+- abbr: WPF
+  term: Windows Presentation Foundation
+  definition: "微软基于 .NET 的桌面 UI 框架,使用 XAML 描述界面。"
+- abbr: MVVM
+  term: Model-View-ViewModel
+  definition: "一种界面架构模式,通过数据绑定将视图与业务逻辑解耦。"

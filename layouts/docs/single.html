@@ -1,0 +1,43 @@
+{{- /*
+  覆盖 themes/hextra/layouts/docs/single.html
+  和主题原文件相比,唯一的改动是在标题下方插入了一行
+  "字数统计 · 预计阅读时长"(主题本身没有这个组件,Hugo 内置的
+  .WordCount / .ReadingTime 是现成的,只是主题没有拿来展示)。
+
+  ⚠️ 这是整份覆盖主题模板文件,不是加一个新 partial——因为插入位置
+  (标题下方)不在主题原有的任何一个可覆盖 partial 范围内。以后升级
+  主题版本时,如果官方这个文件有结构变化,这份覆盖需要手动同步。
+
+  受开关控制(hugo.yaml 的 params 下配置):
+    displayReadingTime: true/false  -> 是否显示这一行,默认 true
+*/ -}}
+{{ define "main" }}
+  <div class='hx:mx-auto hx:flex hextra-max-page-width'>
+    {{ partial "sidebar.html" (dict "context" .) }}
+    {{ partial "toc.html" . }}
+    <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
+        {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
+        <div class="content">
+          {{ if .Title }}
+          <div class="hx:flex hx:flex-col hx:sm:flex-row hx:items-start hx:sm:items-center hx:sm:justify-between hx:gap-4 hx:mb-4">
+            <h1 class="hx:mb-0">{{ .Title }}</h1>
+            {{ partial "components/page-context-menu" . }}
+          </div>
+          {{- if (site.Params.displayReadingTime | default true) -}}
+            <p class="hx:-mt-3 hx:mb-4 hx:text-xs hx:text-gray-500 hx:dark:text-gray-400">
+              {{ .WordCount }} 字 · 预计阅读 {{ .ReadingTime }} 分钟
+            </p>
+          {{- end -}}
+          {{ end }}
+          {{ .Content }}
+        </div>
+        {{ partial "components/last-updated.html" . }}
+        {{- if (site.Params.page.displayPagination | default true) -}}
+          {{- partial "components/pager.html" . -}}
+        {{- end -}}
+        {{ partial "components/comments.html" . }}
+      </main>
+    </article>
+  </div>
+{{ end }}

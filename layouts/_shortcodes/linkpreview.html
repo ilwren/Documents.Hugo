@@ -1,0 +1,28 @@
+{{- /*
+  自定义 shortcode:引用其他页面时,鼠标悬停显示预览卡片(标题+摘要)。
+  ⚠️ 这不是 Hextra 主题内置功能,是本站自行扩展的,依赖同目录的
+  assets/css/custom.css 里的样式,纯 CSS 实现、不需要 JS。
+
+  @param {string} link 目标页面路径,如 /docs/guide/code-highlight/
+  @example {{< linkpreview link="/docs/guide/code-highlight" >}}代码高亮示例{{< /linkpreview >}}
+*/ -}}
+
+{{- $linkParam := .Get "link" | default (.Get 0) -}}
+{{- $target := site.GetPage $linkParam -}}
+
+{{- if not $target -}}
+  {{- errorf "linkpreview shortcode: 找不到页面 %q (使用于 %s)" $linkParam .Page.File.Filename -}}
+{{- end -}}
+
+{{- $text := .Inner -}}
+{{- if not $text -}}{{- $text = $target.Title -}}{{- end -}}
+
+<span class="hxc-link-preview">
+  <a href="{{ $target.RelPermalink }}">{{ $text | safeHTML }}</a>
+  <span class="hxc-link-preview-popup">
+    <span class="hxc-link-preview-title">{{ $target.Title }}</span>
+    {{- with $target.Summary -}}
+      <span class="hxc-link-preview-desc">{{ . | plainify | truncate 60 }}</span>
+    {{- end -}}
+  </span>
+</span>
